@@ -1,4 +1,4 @@
-;; last edit date: 2016/10/24
+;; last edit date: 2016/10/25
 ;; author: Forec
 ;; LICENSE
 ;; Copyright (c) 2015-2017, Forec <forec@bupt.edu.cn>
@@ -15,92 +15,91 @@
 ;; ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 ;; OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-title forec_t18
+title forec_t30
 
 .model small
 .data
-	eng db 1000 dup(0)
-	tocmp db 'SUN$'
-	inputinfo db 'Input:$'
-	outputinfo db 'SUN:$'
-	warninginfo db 0dh, 0ah, 'You can input at most 1000 chars!', 0dh, 0ah, '$'
+	inputinfo db 'Input: $'
+	errorinfo db 0dh, 0ah, 'You can input at most 65535 chars!', 0dh, 0ah, '$'
+	nextline db 0dh, 0ah, '$'
+	letterinfo db 'Letter: $'
+	numberinfo db 'Number: $'
+	otherinfo db 'Other: $'
+.stack 100h
 .code
 start:
 	mov ax, @data
 	mov ds, ax
 	mov es, ax
+	
 	mov dx, offset inputinfo
 	mov ah, 9h
-	int 21h				;; 显示帮助信息
+	int 21h
 	
-	mov ah, 1h
-	mov si, 0h
+	mov si, 00h			;; total
+	mov ah, 01h
+	mov bx, 00h			;; letter
+	mov cx, 00h			;; number
 read:
-	cmp si, 1000
-	jge warning
+	cmp si, 0ffffh
+	jz warning
 	int 21h
 	cmp al, 0dh
-	jz filter			;; 用户输入回车
-	mov eng[si], al
-	inc si
-	jmp read
-
-warning:
-	mov dx, offset warninginfo
-	mov ah, 9h
-	int 21h
-	
-filter:
-	mov di, 0h
-	foreach:
-		cmp di, si
-		jz work
-		mov bl, eng[di]
-		cmp bl, 61h			;; < 'a'
-		jl pass1
-		cmp bl, 7ah			;; > 'z'
-		jg pass1
-		and bl, 0dfh		;; 11011111
-		mov eng[di], bl
-		pass1:
-			inc di
-		jmp foreach
-
-work:
-	mov ax, 0000h
-	mov bx, si
-	mov dx, 0000h
-curcmp:
-	cmp dx, bx
 	jz outputs
-	mov si, offset eng			;; 当前待比较地址
-	add si, dx
-	mov di, offset tocmp		;; 'SUN' 地址
-	mov cx, 0003h				;; 比较长度为3
-	cld
-	lp1:
-		cmp cx, 0000h
-		jnz stcmp				;; 尚未比较完成
-		inc ax					;; 相等
-		jmp lp2
-		stcmp:
-			cmpsb
-			jnz lp2				;; 不等,跳过
-			dec cx				;; 待比较长度减1
-			jmp lp1
-	lp2:
-		inc dx
-		jmp curcmp
+	inc si
+	cmp al, 30h
+	jl read				;; other
+	cmp al, 39h
+	jle isnumber		;; '0' <= '9'
+	cmp al, 41h		
+	jl read				;; '9' < 'a'
+	cmp al, 5ah
+	jle isletter		;; 'a' <= 'z'
+	cmp al, 61h
+	jl read				;; 'z' < 'A'
+	cmp al, 7ah
+	jle isletter		;; 'A' <= 'Z'
+	jmp read			;; other
+	isletter:
+		inc bx
+		jmp read
+	isnumber:
+		inc cx
+		jmp read
 	
-outputs:
-	mov bx, ax
-	mov dx, offset outputinfo
+warning:
+	mov dx, offset errorinfo
 	mov ah, 09h
 	int 21h
 	
+outputs:
+	sub si, bx
+	sub si, cx
+	push si
+	push cx
 	push bx
-	call outputnumber
-	jmp quit
+	
+	mov dx, offset letterinfo
+	mov ah, 09h
+	int 21h
+	call outputnumber		;; letter: xxx
+	call nl
+	
+	mov dx, offset numberinfo
+	mov ah, 09h
+	int 21h
+	call outputnumber		;; number: xxx
+	call nl
+	
+	mov dx, offset otherinfo
+	mov ah, 09h
+	int 21h
+	call outputnumber		;; other: xxx	
+	call nl
+	
+quit:	
+	mov ah, 4ch
+	int 21h
 	
 outputnumber proc near
 	pop bp				;; bp <- ip
@@ -129,9 +128,11 @@ only1:
 	int 21h
 	ret
 outputnumber endp
-	
-quit:
-	mov ah, 4ch
+
+nl proc near
+	mov dx, offset nextline
+	mov ah, 09h
 	int 21h
+	ret
+nl endp
 	end start
-	
