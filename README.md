@@ -3,7 +3,7 @@
 > 此仓库中代码为我学习汇编过程中解决过的习题，如果你有其它相关练习打算分享，欢迎提 PR 补充。 **你可以将你的解法分享到此仓库中，如果你有此意愿，请 fork 后在 `code` 目录下新建一个以你名称命名的文件夹，将你的解法放置在该文件夹下并提交 PR**。如果需要许可声明，请在你的目录下自行添加。
 
 ## 题目来源
-* 北京邮电大学，计算机学院，杨旭东老师《微机原理与接口技术》课程习题
+* 北京邮电大学，计算机学院，《微机原理与接口技术》课程习题（此部分习题的使用已告知相关课程老师）
 
 ## 环境配置
 * Windows 7 及以上版本：建议使用 `DOSBOX`，当前最新版本 `0.74`。需下载 `masm.exe`，`link.exe`，`debug.exe`。也可以选择 `emu8086`，但该软件使用的汇编语言标准与 MASM 有差异。`DOSBOX` 及配套的工具可以从[此处](http://7xktmz.com1.z0.glb.clouddn.com/dosbox-masm.rar)下载。安装 `DOSBOX` 后运行安装目录下的 `DOSBox 0.74 Options.bat`，在打开的 `dosbox-0.74.conf` 文件最后加上以下两句。其中 `path_to_your_tool` 需替换为你的 `masm.exe`等工具所在的目录。要运行代码，请将代码复制到 `path_to_your_tool` 目录下，之后启动 `DOSBOX`，在 `DOSBOX` 环境下编译、调试。
@@ -170,7 +170,7 @@ ENDP	CRAY
 子程序 `PRINTLINE`：  
 显示姓名及电话号码，格式为：  
 ```
-NAME	TEL.  
+NAME	TEL   
 XXX		XXXXXXXX
 ```
 
