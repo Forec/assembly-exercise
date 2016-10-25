@@ -1,0 +1,48 @@
+DATA_SEG SEGMENT
+	ARRAY DW 10 DUP(2), 20 DUP(3), 30 DUP(4), 39 DUP(5), 6
+	LEN DW 100
+DATA_SEG ENDS
+
+CODE SEGMENT
+	ASSUME CS: CODE, DS: DATA_SEG
+START:
+	MOV AX, DATA_SEG
+	MOV DS, AX
+	
+	MOV DI, OFFSET ARRAY
+	MOV CX, LEN
+	CALL FIND_MIN_EVEN
+
+	MOV AH, 4CH
+	INT 21H
+
+;--------------------------------------------------
+;	求一个数组中最小的偶数
+;	入口: 数组地址（DI）, 数组长度(CX)
+;	出口: 最小偶数（AX）
+;--------------------------------------------------
+FIND_MIN_EVEN PROC NEAR
+	PUSH DI
+	PUSH BX
+	PUSH CX
+
+	MOV AX, 7FFFH
+FIND_MIN:
+	MOV BX, [DI]
+	TEST BX, 0001H
+	JNZ NOTLESSOREVEN
+	CMP BX, AX
+	JNL NOTLESSOREVEN
+	MOV AX, BX
+NOTLESSOREVEN:
+	ADD DI, 2
+LOOP FIND_MIN
+
+	POP CX
+	POP BX
+	POP DI 
+	RET
+FIND_MIN_EVEN ENDP
+
+CODE ENDS
+	END START
