@@ -1,6 +1,6 @@
 # 汇编基础习题集  
 
-> 此仓库中代码为我学习汇编过程中解决过的习题，如果你有其它相关练习打算分享，欢迎提 PR 补充。 **你可以将你的解法分享到此仓库中，如果你有此意愿，请 fork 后在 `code` 目录下新建一个以你名称命名的文件夹，将你的解法放置在该文件夹下并提交 PR**。如果需要许可声明，请在你的目录下自行添加。
+> 此仓库中代码为我学习汇编过程中解决过的习题，如果你有其它相关练习打算分享，欢迎提 PR 补充。 **你可以将你的解法分享到此仓库中，如果你有此意愿，请 fork 后在 `code` 目录下新建一个以你名称命名的文件夹，将你的解法放置在该文件夹下，将你的名字添加到此 `README` 末尾的参与者列表，并提交 PR**。如果需要许可声明，请在你的目录下自行添加。
 
 ## 题目来源
 * 1 ~ 40 题：北京邮电大学，计算机学院，《微机原理与接口技术》课程习题（此部分习题的使用已告知相关课程老师）
@@ -288,6 +288,12 @@ COPY con File.dat
 
 * 74、编写一个程序，求出 2 ~ 100 之内的所有素数。
 
+## 参与者列表
+
+**感谢以下成员对此习题集做出的分享和贡献！**
+* [Forec](https://github.com/Forec)
+* [non1996](https://github.com/non1996)
+* [Occupying](https://github.com/Occupying)
 
 # License
 All codes in this repository are licensed under the terms you may find in the file named "LICENSE" in this directory.
