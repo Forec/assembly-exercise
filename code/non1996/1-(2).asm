@@ -10,7 +10,8 @@ START:
     MOV DS, AX
     
     LEA BX, ARRAY + 12
-    MOV [BX+2], 0
+    MOV AX, 0
+    MOV [BX+2], AX
     MOV AX, 4C00H
     INT 21H
 

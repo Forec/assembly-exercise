@@ -10,6 +10,10 @@ CODE SEGMENT
 START:
     MOV AX, DATA
     MOV DS, AX
-    MOV BX, PLENTH
+
+    MOV BX, PLENTH	;PLENTH的值为22，表示三个变量占的内存大小，单位为字节
+
+    MOV AH, 04CH
+    INT 21H	
 CODE ENDS
     END START
