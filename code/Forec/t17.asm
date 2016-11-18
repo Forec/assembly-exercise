@@ -1,4 +1,4 @@
-;; last edit date: 2016/10/24
+;; last edit date: 2016/11/18
 ;; author: Forec
 ;; LICENSE
 ;; Copyright (c) 2015-2017, Forec <forec@bupt.edu.cn>
@@ -36,21 +36,32 @@ read:
 	cmp si, 04h	
 	jge outputs		;; si >= 4
 	int 21h
-	mov store[si], al
-	inc si
+	
 	cmp al, 30h		;; < '0'
 	jl wrong
 	cmp al, 66h		;; > 'f'
 	jg wrong
 	cmp al, 39h		;; <= '9'
-	jle read
+	jle zero2nine
 	cmp al, 41h		;; < 'A'
 	jl wrong
 	cmp al, 46h		;; <= 'F'
-	jle read
+	jle upperCase
 	cmp al, 61h		;; >= 'a'
-	jge read
+	jge lowerCase
 	jmp wrong
+	zero2nine:
+		sub al, 30h
+		jmp finish
+	upperCase:
+		sub al, 37h
+		jmp finish
+	lowerCase:
+		sub al, 57h
+	finish:
+		mov store[si], al
+		inc si
+		jmp read
 
 wrong:
 	mov dx, offset errorinfo
@@ -71,14 +82,15 @@ outputs:
 		cmp si, 04h	
 		jge quit		;; si >= 4
 		mov ch, store[si]
-		sub ch, 30h		;; ascii2num
+		mov cl, 04h
+		shl ch, cl			;; 先左移 4 位
 		mov cl, 00h
 		print:
-			cmp cl, 08h		;; 已右移 8 次,换下一个数
+			cmp cl, 04h		;; 已左移 4 次,换下一个数
 			jz breakpoint
 			mov dl, 30h		;; 默认 0(30h)
 			test ch, 80h
-			jz pass1		;; 高位为 0, 跳过输出1
+			jz pass1		;; 高位为 0, 跳过输出 1
 			mov dl, 31h
 			pass1:
 			int 21h
@@ -87,8 +99,11 @@ outputs:
 			jmp print
 		breakpoint:
 		inc si
+		test si, 01h
+		jnz pass2			;; 不输出空格
 		mov dl, ' '			;; 补全空格
 		int 21h
+		pass2:
 		jmp foreach
 
 quit:

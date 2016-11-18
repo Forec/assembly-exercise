@@ -1,4 +1,4 @@
-;; last edit date: 2016/10/24
+;; last edit date: 2016/11/18
 ;; author: Forec
 ;; LICENSE
 ;; Copyright (c) 2015-2017, Forec <forec@bupt.edu.cn>
@@ -21,15 +21,18 @@ title forec_t19
 .data
 	inputinfo db 'Input:$'
 	outputinfo db 'Output:$'
+.stack 100h
 .code
 start:
 	mov ax, @data
 	mov ds, ax
+	mov es, ax
 	mov bx, 0h
 	mov dx, offset inputinfo
 	mov ah, 09h
 	int 21h
 	mov ah, 01h
+
 read:
 	int 21h
 	cmp al, '$'
@@ -50,32 +53,38 @@ outputs:
 	mov ah, 09h
 	int 21h
 	
-	mov cl, 0ah
-	cmp bx, 0000h
-	jnz outputdec
-	mov dl, '0'
-	mov ah, 02h
+	push bx
+	call outputnumber
+
+	mov ah, 4ch
 	int 21h
-	jmp quit
-outputdec:
-	mov ax, bx
+	
+outputnumber proc near
+	pop bp				;; bp <- ip
+	pop ax
+	push bp
+	cmp ax, 0ah
+	jl only1
+	mov cl, 0ah
 	div cl
 	mov bl, ah		;; 余数
 	mov dl, al		;; 商
-	cmp dl, 00h
-	jz printmod
+	mov dh, 00h
+	push bx
+	push dx
+	call outputnumber
+	pop bx
+	mov ah, 02h
+	add bl, 30h
+	mov dl, bl
+	int 21h
+	ret
+only1:
+	mov dl, al
 	add dl, 30h
 	mov ah, 02h
 	int 21h
-	jmp outputdec
-printmod:
-	mov ah, 02h
-	mov dl, bl		;; 打印个位数
-	add dl, 30h
-	int 21h
-
-quit:
-	mov ah, 4ch
-	int 21h
-	end start
+	ret
+outputnumber endp
 	
+	end start
