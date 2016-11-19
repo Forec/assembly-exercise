@@ -1,0 +1,40 @@
+TITLE seagullbird_t23
+.MODEL SMALL
+.DATA
+	M DW 10 DUP (0), 1, -2, 3, -4, 5, -6, 7, -8, 9, -10
+	N EQU $ - M
+.CODE
+MAIN PROC FAR
+	ASSUME CS:_TEXT, DS:_DATA
+	PUSH DS
+	XOR AX, AX
+	PUSH AX
+	MOV AX, @DATA
+	MOV DS, AX
+
+	XOR BX, BX				
+	XOR AX, AX				; MAX NUMBER
+
+	FOR:
+		CMP BX, N
+		JGE SAVE
+		MOV CX, [BX]
+		CMP CX, 0
+		JGE POSITIVE
+		NEG CX
+		POSITIVE:
+			CMP CX, AX
+			JLE NEXT
+		MOV AX, CX
+		NEXT:
+			ADD BX, 2
+			JMP FOR
+
+	SAVE:
+		ADD BX, N
+		MOV [BX], AX
+		MOV [BX+2], BX
+
+	RET
+MAIN ENDP
+	END MAIN
