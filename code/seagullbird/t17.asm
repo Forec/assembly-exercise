@@ -1,0 +1,96 @@
+TITLE seagullbird_t17
+.MODEL SMALL
+.DATA
+	BUFF DB 4 DUP (0)
+.CODE
+MAIN PROC FAR
+	ASSUME CS:_TEXT, DS:_DATA
+	PUSH DS
+	XOR AX, AX
+	PUSH AX
+	MOV AX, @DATA
+	MOV DS, AX
+
+	MOV SI, 0
+	MOV AH, 01H
+
+	INPUT:
+		CMP SI, 4
+		JGE OUTPUT
+		INT 21H
+		CMP AL, 30H			; <0
+		JL FINAL
+		CMP AL, 66H			; >f
+		JG FINAL
+		CMP AL, 39H			; <=9
+		JLE NUMBER
+		CMP AL, 41H			; <A
+		JL FINAL
+		CMP AL, 46H			; <=F
+		JLE UPPER
+		CMP AL, 51H			; <a
+		JLE FINAL
+		JMP LOWER
+
+	NUMBER:
+		SUB AL, 48
+		MOV BUFF[SI], AL
+		INC SI
+		JMP INPUT
+
+	UPPER:
+		SUB AL, 55
+		MOV BUFF[SI], AL
+		INC SI
+		JMP INPUT
+
+	LOWER:
+		SUB AL, 87
+		MOV BUFF[SI], AL
+		INC SI
+		JMP INPUT
+        
+	OUTPUT:  
+	
+		MOV SI, 0
+		MOV AH, 02H 
+		MOV DL, 0DH
+		INT 21H
+		MOV DL, 0AH
+		INT 21H
+		FOR:   
+			CMP SI, 4
+			JGE FINAL
+			MOV AL, BUFF[SI]
+			INC SI    
+			MOV CL, 4
+			SHL AL, CL
+			MOV CX, 4
+			FOR_EACH:	
+				SHL AL, 1
+				JC ONE
+				MOV DL, 30H
+				 
+				PUSH AX
+				INT 21H
+				POP AX  
+				
+				INC BX
+			    JMP NEXT
+			
+			ONE:
+				MOV DL, 31H 
+				PUSH AX
+				INT 21H
+				POP AX
+				INC BX
+			NEXT:	
+				LOOP FOR_EACH
+			MOV DL, 0
+			INT 21H
+			JMP FOR
+
+	FINAL:
+		RET
+MAIN ENDP
+	END MAIN
