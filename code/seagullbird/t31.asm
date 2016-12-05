@@ -1,0 +1,54 @@
+TITLE seagullbird_t31
+.MODEL SMALL
+.DATA
+	A DB 3
+	B DB 3
+.CODE
+MAIN PROC FAR
+	ASSUME CS:_TEXT, DS:_DATA
+	PUSH DS
+	XOR AX, AX
+	PUSH AX
+	MOV AX, @DATA
+	MOV DS, AX
+
+	MOV AL, 01H
+	MOV AH, AL
+	LEA BX, A
+	AND AL, [BX]							; AL 存 A 的最低位
+	AND AH, [BX+1]							; AH 存 B 的最低位
+
+	ADD AL, AH
+
+	CMP AL, 2
+	JZ TWO_ODDS
+	CMP AL, 1
+	JZ ONE_ODD_ONE_EVEN
+	CMP AL, 0
+	JZ TWO_EVENS
+
+	ONE_ODD_ONE_EVEN:
+		CMP AH, 0							; 如果 B 为偶数，则 A 一定为奇数，不作改变
+		JZ FINAL
+		MOV AL, [BX]
+		MOV AH, [BX+1]
+		MOV [BX+1], AL
+		MOV [BX], AH
+		JMP FINAL
+
+	TWO_ODDS:
+		MOV AL, [BX]
+		INC AL
+		MOV [BX], AL
+		MOV AL, [BX+1]
+		INC AL
+		MOV [BX+1], AL
+		JMP FINAL
+
+	TWO_EVENS:
+		JMP FINAL
+
+	FINAL:
+		RET
+MAIN ENDP
+	END MAIN
