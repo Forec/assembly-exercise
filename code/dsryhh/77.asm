@@ -1,4 +1,3 @@
-;version control: the latest version can been seen at https://github.com/DSRYhh/SIMS-Assembly/blob/master/31.asm
 data segment
     STUNAME DB 20 DUP(10 DUP('$'));each name has 10 bytes
     CLASS DB 20 DUP('$');each class has 1 byte
